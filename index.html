@@ -1,0 +1,66 @@
+<script>
+    document.getElementById('generateButton').addEventListener('click', function () {
+        const hoehe = parseFloat(document.getElementById('hoehe').value);
+        const breite = parseFloat(document.getElementById('breite').value);
+        const laenge = parseFloat(document.getElementById('laenge').value);
+        const nutzung = document.getElementById('nutzung').value;
+
+        if (isNaN(hoehe) || isNaN(breite) || isNaN(laenge) || !nutzung) {
+            alert('Bitte geben Sie gültige Maße und einen Nutzungszweck ein.');
+            return;
+        }
+
+        const container = document.getElementById('threeContainer');
+        container.innerHTML = ''; // Vorherige Inhalte löschen
+
+        // Szene erstellen
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Beleuchtung hinzufügen
+        const light = new THREE.AmbientLight(0xffffff, 0.8); // Weiches Licht
+        scene.add(light);
+
+        // Raum als Box erstellen
+        const geometry = new THREE.BoxGeometry(breite, hoehe, laenge);
+        const material = new THREE.MeshBasicMaterial({ color: 0x0077cc, wireframe: true });
+        const room = new THREE.Mesh(geometry, material);
+        scene.add(room);
+
+        // Kamera korrekt positionieren
+        const maxDimension = Math.max(hoehe, breite, laenge);
+        camera.position.set(maxDimension * 1.5, maxDimension * 1.2, maxDimension * 1.5);
+        camera.lookAt(0, 0, 0);
+
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+            room.rotation.y += 0.01; // Raum leicht rotieren
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Vorschlagstext
+        const vorschlagText = document.getElementById('vorschlagText');
+        switch (nutzung) {
+            case 'büro':
+                vorschlagText.textContent = 'Empfohlen: Akustik-Paneele, LED-Beleuchtung mit 5000K Farbtemperatur und automatische Verschattung.';
+                break;
+            case 'wohnzimmer':
+                vorschlagText.textContent = 'Empfohlen: Schallabsorbierende Teppiche, dimmbare Beleuchtung und manuelle Vorhänge.';
+                break;
+            case 'konferenzraum':
+                vorschlagText.textContent = 'Empfohlen: Sound Masking System, vernetzte Beleuchtung und motorisierte Rollos.';
+                break;
+            case 'schule':
+                vorschlagText.textContent = 'Empfohlen: Akustikdecken, flackerfreie Beleuchtung und verstellbare Sonnenschutzsysteme.';
+                break;
+            default:
+                vorschlagText.textContent = 'Kein spezifischer Vorschlag vorhanden.';
+        }
+        document.getElementById('vorschlag').style.display = 'block';
+    });
+</script>
